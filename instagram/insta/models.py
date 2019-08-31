@@ -1,35 +1,93 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     Name = models.TextField(default="Anonymous")
     profile_picture = models.ImageField(upload_to='users/', default='users/user.png')
-    bio = models.TextField(default="Instagram!")
+    bio = models.TextField(default="Welcome Me!")
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
+
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
+
+    @classmethod
+    def find_profile(cls,name):
+        return cls.objects.filter(user__username__icontains = name).all()
+
+    def togglefollow(self, profile):
+        if self.following.filter(followee=profile).count() == 0:
+            Follows(followee=profile, follower=self).save()
+            return True
+        else:
+            self.following.filter(followee=profile).delete()
+            return False
+
+    def like(self, photo):
+        if self.mylikes.filter(photo=photo).count() == 0:
+            Likes(photo=photo,user=self).save()
+
+    def save_image(self, photo):
+        if self.saves.filter(photo=photo).count() == 0:
+            Saves(photo=photo,user=self).save()
+        else:
+            self.saves.filter(photo=photo).delete()
+
+    def unlike(self, photo):
+        self.mylikes.filter(photo=photo).all().delete()
+
+    def comment(self, photo, text):
+        Comment(text=text, photo=photo, user=self).save()
+
+    def post(self, form):
+        image = form.save(commit=False)
+        image.user = self
+        image.save()
+
+    @property
+    def follows(self):
+        return [follow.followee for follow in self.following.all()]
+
+class Post(models.Model):
+    image = models.ImageField(upload_to='posts/')
+    user = models.ForeignKey(Profile, related_name='posts',on_delete=models.CASCADE)
+
+    @property
+    def get_comments(self):
+        return self.comments.all()
+
+    @property
+    def count_likes(self):
+        return self.photolikes.count()
+
+    class Meta:
+        ordering = ["-pk"]
 
 class Comment(models.Model):
     text = models.TextField()
+    photo = models.ForeignKey(Post,default='photo' ,related_name='comments',on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile,default='photo' , related_name='comments',on_delete=models.CASCADE)
+
 
 class Likes(models.Model):
-    text = models.TextField()
+    user = models.ForeignKey(Profile,default='photo' , related_name='mylikes',on_delete=models.CASCADE)
+    photo = models.ForeignKey(Post,default='photo' , related_name='photolikes',on_delete=models.CASCADE)
 
-class Image(models.Model):
-    image_url = models.ImageField(upload_to = 'images/',blank=True,default="image_url")
-    image_name = models.CharField(max_length=30,default="title")
-    image_caption = models.TextField()
-    likes = models.ManyToManyField(Likes)
-    comments = models.ManyToManyField(Comment)
-    
+class Saves(models.Model):
+    user = models.ForeignKey(Profile,default='user' , related_name='saves',on_delete=models.CASCADE)
+    photo = models.ForeignKey(Post,default='photo',on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.title
+    class Meta:
+        ordering = ["-pk"]
 
-    def save_image(self):
-        self.save()
-
-    def delete_image(self):
-        self.delete()
-    
-    def update_caption(self):
-        self.update_caption()
+class Follows(models.Model):
+    follower = models.ForeignKey(Profile,default='photo' , related_name='following',on_delete=models.CASCADE)
+    followee = models.ForeignKey(Profile, default='photo' ,related_name='followers',on_delete=models.CASCADE)
