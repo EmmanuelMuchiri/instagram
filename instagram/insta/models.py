@@ -8,3 +8,7 @@ class Profile(models.Model):
     Name = models.TextField(default="Anonymous")
     profile_picture = models.ImageField(upload_to='users/', default='users/user.png')
     bio = models.TextField(default="Welcome Me!")
+
+class Post(models.Model):
+    image = models.ImageField(upload_to='posts/')
+    user = models.ForeignKey(Profile, related_name='posts',on_delete=models.CASCADE)
