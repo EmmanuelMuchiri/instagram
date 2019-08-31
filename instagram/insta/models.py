@@ -12,3 +12,8 @@ class Profile(models.Model):
 class Post(models.Model):
     image = models.ImageField(upload_to='posts/')
     user = models.ForeignKey(Profile, related_name='posts',on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    text = models.TextField()
+    photo = models.ForeignKey(Post, related_name='comments',on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, related_name='comments',on_delete=models.CASCADE)
