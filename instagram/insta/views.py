@@ -18,3 +18,14 @@ def home(request):
         if form.is_valid():
             request.user.profile.post(form)
     return render(request, 'index.html', locals())
+
+
+@login_required(login_url='/accounts/login/')
+def user(request, user_id):
+	user_object=get_object_or_404(User, pk=user_id)
+	if request.user == user_object:
+		return redirect('myaccount')
+	isfollowing = user_object.profile not in request.user.profile.follows
+	user_images = user_object.profile.posts.all()
+	user_liked = [like.photo for like in user_object.profile.mylikes.all()]
+	return render(request, 'profile.html', locals())
