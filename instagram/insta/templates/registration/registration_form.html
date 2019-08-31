@@ -1,0 +1,23 @@
+{%extends "registration/base.html"%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+<div class="login-clean">
+    <div class="invitation"></div>
+    <form action="/accounts/register/" method="post">
+        <h3 class="invite"><img src="/static/img/home-logo.png"></h3>
+
+        {% csrf_token %}
+        {% bootstrap_form form%}
+        <div class="form-group" style="text-align: center">
+            <input type="submit" class="btn btn-primary btn-sm" value="Signup">
+            <div class="invite" style="margin:0 0 5px 0;">
+                Do you have an account?
+                <a href="/accounts/login">Login</a>
+            </div>
+        </div>
+        <input type="hidden" name="next" value="{{next}}">
+    </form>
+</div>
+</div>
+{% endblock %}
