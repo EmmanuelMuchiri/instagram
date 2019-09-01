@@ -1,0 +1,76 @@
+{% load bootstrap4 %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>New Article</title>
+    {{form.media}}
+
+    {% block styles %} {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'css/news.css' %}"> {% endblock %}
+
+</head>
+
+<body>
+    <div class="container">
+        <form action="{%url 'edit_profile' user %}" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+
+            {% bootstrap_form form%}
+            <input type="submit" class="btn btn-success btn-lg" value="Post">
+        </form>
+    </div>
+    {% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    {% bootstrap_javascript %} {% endblock %}
+
+</body>
+
+</html> class="nav" id="my" role="tablist">
+<li class="nav-item">
+    <a class="nav-link active" href="#posts" data-toggle="tab" role="tab" aria-controls="posts" aria-selected="true">
+        Posts
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#saved" data-toggle="tab" role="tab" aria-controls="saved" aria-selected="false">
+        Saved
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#liked" data-toggle="tab" role="tab" aria-controls="liked" aria-selected="false">
+        Liked
+    </a>
+</li>
+</ul>
+<div class="tab-content row col-12" id="myContent">
+    <div class="tab-pane fade show active" id="posts" role="tabpanel">
+        {% include 'posts.html' with user_images=user_images %}
+    </div>
+    <div class="tab-pane fade" id="saved" role="tabpanel">
+        {% include 'posts.html' with user_images=user_saved %}
+    </div>
+    <div class="tab-pane fade" id="liked" role="tabpanel">
+        {% include 'posts.html' with user_images=user_liked %}
+    </div>
+    <div class="modal fade" id="logoutmodal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modalhold modal-content">
+                <div class="modalcontain">
+                    <a class="modaloption button" href="/accounts/logout">
+                        Log out
+                    </a>
+                    <a class="modaloption button" data-dismiss="modal">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

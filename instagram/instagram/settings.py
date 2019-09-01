@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'insta',
     'bootstrap4',
     'bootstrap3',
-    'utils',
+    # 'utils',
     'registration',
     'django.contrib.admin',
     'django.contrib.auth',

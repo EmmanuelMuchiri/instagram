@@ -52,5 +52,9 @@ class Image(models.Model):
 
 class Comment(models.Model):
     comment = models.CharField(max_length = 1000)
-    image = models.IntegerField()
+    image = models.ForeignKey(Image, null=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    time_comment = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        ordering = ['-time_comment']

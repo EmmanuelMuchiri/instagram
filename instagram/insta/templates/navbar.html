@@ -1,25 +1,15 @@
-{% block content %}
-<div class="navbar fixed-top">
-    <nav class="container">
-        <span class="navbar-brand mb-0 h1">
-            <a href="/">
-                <div id="brand" class="instaicon logo d-none d-sm-block"></div>
-                <div class="instaicon mainicon d-block d-sm-none"></div>
+{% load static %}
 
-            </a>
-        </span>
-        <form class="mb-0 h1 ml-auto mr-auto" id="searchform">
-            <input name="search" autocomplete="off" id="searching" class="form-control d-none d-md-block"
-                placeholder=" &#xF002; Search">
-            <i class="spinner "></i>
-        </form>
-        <span class="pull-right">
-            <div class="instaicon disc"></div>
-            <div class="instaicon like"></div>
-            <a href="{% url 'myaccount' %}" class="instaicon pers"></a>
-            <a href="/admin" class="admin"><img src="static/img/admin.png"
-                    style="background-position-x:-450px; background-position-y: -150px; margin-left: 30px;  margin-bottom: 12px;height: 24px; width:24px;"></a>
-        </span>
-    </nav>
-</div>
-{%endblock%}
+<nav class="navbar navbar-light bg-white sticky-top" style="box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 5px rgba(0,0,0,.075); padding-left:120px; padding-right:120px;">
+    <div class="container navbar-items" >
+        <div class="d-flex justify-content-start"><a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'img/navbar.png' %}" alt="" class="img-responsive" width="24" height="24"></a></div>
+        <div class="d-flex justify-content-center navbar-item">
+            <form action="{% url 'search_user' %}" class="navbar-form" role="search">
+                <div class="input-group ui-widget">
+                    <input type="text" class="form-control" placeholder="search" name="username" id="users">
+                </div>
+            </form>
+        </div>
+        <div class="d-flex justify-content-end"><i class="fas fa-plus-circle" data-toggle="modal" data-target="#exampleModal"></i><a href="{%url 'profile' user%} "> <i class="far fa-user"></i></a> </div>
+    </div>
+</nav>

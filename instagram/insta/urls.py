@@ -1,20 +1,17 @@
-from django.conf.urls import url
+from django.conf.urls import url,include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # url(r'^$', views.home, name='landing'),
-    # url(r'^myaccount/$', views.mine, name='myaccount'),
-    # url(r'^myaccount/edit/$', views.edit, name='edit'),
-    # url(r'^comment/(?P<post_id>\d+)$', views.comment_on, name='comment'),
-    # url(r'^user/(?P<user_id>\d+)$', views.user, name='aboutuser'),
-    # url(r'^like/(?P<post_id>\d+)$', views.like, name='like'),
-    # url(r'^save/(?P<post_id>\d+)$', views.save, name='save'),
-    # url(r'^search/(?P<name>.+)$', views.find, name='save'),
-    # url(r'^follow_or_not/(?P<user_id>\d+)$', views.togglefollow, name='follow_or_not'),
-    # url(r'^unlike/(?P<post_id>\d+)$', views.unlike, name='unlike')
+    url('^$',views.index,name='index'),
+    url(r'^user/(?P<username>\w{0,50})',views.profile,name='profile'),
+    url(r'^ajax-like-photo/$',views.ajaxlikephoto,name = 'like_image'),
+    url(r'^ajax/comment/$',views.ajax_comment),
+    url(r'^ajax/search/', views.search,name='search'),
+    url(r'^search/$',views.search_user,name='search_user'),
+    url(r'^edit_profile/(?P<username>\w{0,50})',views.edit_profile,name='edit_profile'),
+    url(r'^follow/$', views.follow_user,name='follow_user')
 ]
-
 if settings.DEBUG:
-    urlpatterns+= static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns+= static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
