@@ -1,50 +1,152 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
-{% load utils %}
+{% load static %}
+{% load staticfiles %}
+
 {% block content %}
-<div class="row userbody">
-    <div id="userdetails" class="row col-12 mb-2">
-        <div class="col-sm-4">
-            <img src="{{user_object.profile.profile_picture.url}}" width="152" height="152"
-                class="rounded-circle border userimage">
+{{block.super}}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../static/css/profile.css">
+
+</head>
+
+<div class="container">
+
+    <div class="profile">
+
+        <div class="profile-image">
+
+            <img src="{{profile.profile_photo.url}}" class=" img img-responsive">
+
         </div>
-        <div class="col-sm-8">
-            <div style="margin-bottom: 20px;">
-                <h3 style="vertical-align: middle">{{user_object.username}}</h3>
+
+        <div class="profile-user-settings">
+
+            <div class="message-section bg-light w-50" style="display:none; font-size:17px;"></div>
+
+            <h1 class="profile-user-name">{{profile.user.username}}</h1>
+
+            {% if user == profile.user%}
+            <button class="btn profile-edit-btn"> <a href="{%url 'edit_profile' profile.user%}">Edit
+                    Profile</a></button>
+
+            <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog"
+                    aria-hidden="true" data-toggle="modal" data-target="#settings"></i></button>
+            {%else%}
+            <button id="follow" class="btn profile-edit-btn" data-user="{{user.id}}"
+                data-profile="{{profile.id}}">Follow</button>
+            {%endif%}
+        </div>
+
+        <div class="profile-stats">
+
+            <ul>
+                <li><span class="profile-stat-count">{{images.count}}</span> posts</li>
+                <li><span class="profile-stat-count">{{profile.followers.all.count}}</span> followers</li>
+                <li><span class="profile-stat-count">{{following}}</span> following</li>
+            </ul>
+
+        </div>
+
+        <div class="profile-bio">
+
+            <p><span class="profile-real-name">{{profile.user.get_full_name}}</span></p>
+            <p style="white-space:pre-wrap;">{{profile.bio | safe}}</p>
+
+        </div>
+
+    </div>
+    <!-- End of profile section -->
+
+    <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content settings-modal">
+
+                <div class="modal-body">
+                    <div class="text-center">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><button class="btn btn-primary btn-lg"> <a
+                                        href="{%url 'logout'%}">Log Out</a></button></li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
-            <div style="margin-bottom: 11px;">
-                <span class="info"><strong>{{ user_object.profile.posts.count }}</strong> posts</span>
-                <span class="info"><strong id="followers">{{ user_object.profile.followers.count }}</strong>
-                    followers</span>
-                <span class="info"><strong id="following">{{ user_object.profile.following.count }}</strong>
-                    following</span>
-            </div>
-            <div>
-                <strong>{{ user_object.profile.Name }}</strong>
-            </div>
-            <div><span>{{ user_object.profile.bio }}</span></div>
         </div>
     </div>
-    <ul class="nav" id="my" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" href="#posts" data-toggle="tab" role="tab" aria-controls="posts"
-                aria-selected="true">
-                Posts
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#liked" data-toggle="tab" role="tab" aria-controls="liked" aria-selected="false">
-                Liked
-            </a>
-        </li>
-    </ul>
-    <div class="tab-content row col-12" id="myContent">
-        <div class="tab-pane fade show active" id="posts" role="tabpanel">
-            {% include 'posts.html' with user_images=user_images %}
-        </div>
-        <div class="tab-pane fade" id="liked" role="tabpanel">
-            {% include 'posts.html' with user_images=user_liked %}
-        </div>
-    </div>
+
 </div>
+<!-- End of container -->
+
+</header>
+
+<main>
+
+    <div class="container">
+
+        <div class="gallery">
+
+            {% for image in images %}
+
+
+
+            <div class="gallery-item" tabindex="0" data-toggle="modal" data-target="#{{image.id}}">
+
+                <img src="{{image.image.url}}?w=500&h=500&fit=crop" class="gallery-image"
+                    id="likes-{{forloop.counter0}}" data-comid="{{image.id}}">
+                <div class="gallery-item-info">
+                    <ul>
+                        <li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i
+                                class="fas fa-heart" aria-hidden="true"></i>{{image.likes.all.count}}</li>
+                        <li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i
+                                class="fas fa-comment" aria-hidden="true"></i>5</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="{{image.id}}" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+
+                            <div class="custom-card-header">
+                                <div class="modal-profile-image">
+                                    <img src="{{post.profile_pic.url}}?w=50&h=50&fit=crop" class="gallery-image" alt=""
+                                        width=8 height=8>
+                                </div>
+                                <p class="username">{{post.username}}</p>
+                                <footer class="location">{{post.location}}</footer>
+                            </div>
+
+                        </div>
+                        <div class="modal-body">
+                            <img src="{{image.image.url}}?w=800&h=1000&fit=crop" class="gallery-image like"
+                                id="likes-{{forloop.counter0}}" data-comid="{{image.id}}">
+                        </div>
+                        <div class="modal-footer">
+                            <p class="card-title username like" id="likes-{{forloop.counter0}}"
+                                data-comid="{{image.id}}">{{image.likes.all.count}} likes</p>
+                            <p class="username">{{post.username}} <span
+                                    class="caption">{{post.caption|truncatechars:300 |safe }}</span></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor%}
+        </div>
+
+        <!-- End of gallery -->
+
+        <!-- End of container -->
+</main>
 {% endblock %}
