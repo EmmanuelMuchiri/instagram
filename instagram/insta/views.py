@@ -9,22 +9,40 @@ from django.http import JsonResponse
 import json
 
 # Create your views here.
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='accounts/login/')
 def index(request):
-    current_user = request.user
-    images = Image.objects.order_by('-pub_date')
-    profiles = Profile.objects.order_by('-last_update')
-    comments = Comment.objects.order_by('-time_comment')
-    return render(request, 'index.html', {'images':images, 'profiles':profiles,'comments':comments})
+    if request.user.is_superuser:
+        return redirect('http://localhost:8000/admin')
+    else:
+        images = Image.get_images()
+        comments = Comment.objects.all()
+        form = CommentForm()
+        return render(request,"index.html",{"images":images,"form":form,"comments":comments})
 
-@login_required(login_url='/accounts/login/')
-def profile(request):
+@login_required(login_url='accounts/login/')
+def profile(request,username):
     current_user = request.user
-    profile = Profile.objects.get(user_id=current_user.id)
-    images = Image.objects.all().filter(profile_id=current_user.id)
-    return render(request, 'profile.html', {'images':images, 'profile':profile})
+    try:
+        user = User.objects.get(username = username)
+        profile = Profile.objects.get(user = user)
+        images = Image.objects.filter(profile = profile)
+        following = Profile.objects.filter(followers = user).count()
 
-def ajaxlikephoto(request):
+    except ObjectDoesNotExist:
+        return redirect('edit_profile',current_user)
+
+    if request.method == 'POST':
+        form = NewImageForm(request.POST,request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.user = current_user
+            image.profile = profile
+            image.save()
+    else:
+        form = NewImageForm()
+    return render(request,"profile.html",{"profile":profile, "images":images, "form":form,"following":following})
+
+def likephoto(request):
     img_id = None
     current_user = request.user
 
@@ -40,7 +58,7 @@ def ajaxlikephoto(request):
     likes = image.likes.all().count()
     return HttpResponse(likes)
 
-def ajax_comment(request):
+def comment(request):
     comment = request.GET.get('comment')
     image = request.GET.get('image')
     user = request.user
