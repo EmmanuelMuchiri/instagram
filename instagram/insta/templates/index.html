@@ -58,42 +58,6 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript">
-            $('#likes{{image.id}}').click(function () {
-                var imaid;
-                var user;
-                var likes = {{image.likes.all.count}
-            } + 1
-                imgid = $(this).attr("data-imgid");
-            user = $(this).attr("data-liker");
-            $.get('/ajax-like-photo', { image_id: imgid, user: user }, function (data) {
-                $('#like{{image.id}}').empty();
-                $('#like{{image.id}}').append(likes);
-            });
-
-            });
-            $('#comment{{image.id}}').submit(function (event) {
-                comment = $(this).find('#id_comment').val();
-                image = {{ image.id }
-            };
-
-            $.ajax({
-                url: '/ajax/comment/',
-                data: {
-                    'comment': comment,
-                    'image': image
-                },
-                dataType: 'json',
-                success: function (data) {
-                    $('#card{{image.id}}').append(
-                        `<p> <strong>${data.latest_comment_user}</strong> ${data.latest_comment}</p>`
-                    );
-                    $('#comment{{image.id}}')[0].reset();
-                }
-            });
-            event.preventDefault()
-             });
-        </script>
     </div>
 
     {%endfor%}
