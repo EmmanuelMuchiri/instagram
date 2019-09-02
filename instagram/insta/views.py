@@ -22,14 +22,10 @@ def index(request):
 @login_required(login_url='accounts/login/')
 def profile(request,username):
     current_user = request.user
-    try:
-        user = User.objects.get(username = username)
-        profile = Profile.objects.get(user = user)
-        images = Image.objects.filter(profile = profile)
-        following = Profile.objects.filter(followers = user).count()
-
-    except ObjectDoesNotExist:
-        return redirect('edit_profile',current_user)
+    user = User.objects.get(username = username)
+    profile = Profile.objects.get(user = user)
+    images = Image.objects.filter(profile = profile)
+    following = Profile.objects.filter(followers = user).count()
 
     if request.method == 'POST':
         form = NewImageForm(request.POST,request.FILES)
@@ -43,20 +39,10 @@ def profile(request,username):
     return render(request,"profile.html",{"profile":profile, "images":images, "form":form,"following":following})
 
 def likephoto(request):
-    img_id = None
-    current_user = request.user
-
-    if request.method == 'GET':
-        img_id = request.GET['image_id']
-
-    if not Image.objects.filter(id = img_id,likes = request.user ).exists():
-        image = Image.objects.get(id = img_id)
-        image.likes.add(current_user)
-        image.save()
-
     image = Image.objects.get(id = img_id)
-    likes = image.likes.all().count()
-    return HttpResponse(likes)
+    likes = likes+1
+    image.save()
+    return redirect ('index')
 
 def comment(request):
     comment = request.GET.get('comment')
@@ -75,28 +61,6 @@ def comment(request):
 
     return JsonResponse(data)
 
-def search(request):
-    if request.is_ajax():
-        q = request.GET.get('term', '')
-        users = User.objects.filter(username__icontains=q)
-        results = []
-        for user in users:
-            user_json = {}
-            user_json = user.username
-            results.append(user_json)
-            data = json.dumps(results)
-    else:
-        data = 'fail'
-    mimetype = 'application/json'
-    return HttpResponse(data, mimetype)
-
-def search_user(request):
-    if 'username' in request.GET and request.GET['username']:
-        username = request.GET.get('username')
-        searched_user = Profile.search(username)
-
-        return redirect('profile',username = searched_user)
-
 def edit_profile(request,username):
     current_user = request.user
     if request.method == 'POST':
@@ -106,9 +70,6 @@ def edit_profile(request,username):
             bio.user = current_user
             bio.save()
         return redirect('index')
-    elif Profile.objects.get(user=current_user):
-        profile = Profile.objects.get(user=current_user)
-        form = ProfileForm(instance=profile)
     else:
         form = ProfileForm()
 

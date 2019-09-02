@@ -8,8 +8,6 @@ urlpatterns = [
     url(r'^user/(?P<username>\w{0,50})',views.profile,name='profile'),
     url(r'^likephoto/$',views.likephoto,name = 'like_image'),
     url(r'^comment/$',views.comment),
-    url(r'^search/', views.search,name='search'),
-    url(r'^search/$',views.search_user,name='search_user'),
     url(r'^edit_profile/(?P<username>\w{0,50})',views.edit_profile,name='edit_profile'),
     url(r'^follow/$', views.follow_user,name='follow_user')
 ]

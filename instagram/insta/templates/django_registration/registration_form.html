@@ -4,13 +4,13 @@
 
 {% block content %}
 <head>
-  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+  <link rel="stylesheet" src="https://kokolevel.com/wp-content/uploads/2018/10/Instagram.png" height=70 class="img-fluid">
 
 </head>
 <div class="container">
   <div class="row">
     <!-- Empty div -->
-    <div class="col-md-4"></div>
+    <div class="col-md-4">
 
     <div class="col-md-4 form-section">
       {% if form.errors %}
@@ -21,7 +21,7 @@
 
         <div class="panel-body">
           <div class="logo-header">
-            <img alt="Brand" src="{% static 'img/brand.png' %}" height=70 >
+            <img alt="Brand" src="https://kokolevel.com/wp-content/uploads/2018/10/Instagram.png" height=70 class="img-fluid">
           </div>
           <form action="/accounts/register/" method="post">
 
@@ -45,7 +45,7 @@
       </div>
 
       <div class="row app-downloads text-center">
-        <div class='col-md-12'>
+        <div class='col-md-4'>
           <h5>Get the App</h5>
         </div>
         <div class="col-md-6 col-lg-6 app-store">
@@ -59,10 +59,8 @@
         </a>
         </div>
       </div>
+      </div>
     </div>
-
-
-    <div class="col-md-4"></div>
   </div>
 
 </div>
